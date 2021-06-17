@@ -1,17 +1,11 @@
 #include "calibrate_rs.hpp"
 
 
-void calibrate_color_ir(cv::Mat &H_rgb, cv::Mat &H_ir, rs2::pipeline &pipe) {
+void calibrate_color_ir(cv::Mat &H_rgb, cv::Mat &H_ir, rs2::pipeline &pipe, const char* window_name_color, const char* window_name_ir) {
 
     //Exercise 1, find homography between color camera and chessboard plane
     bool calibrated = false;
-
-    const auto window_name_color = "Display Image Color Cam";
-    cv::namedWindow(window_name_color, cv::WINDOW_AUTOSIZE);
-    const auto window_name_ir = "Display Image IR Cam";
-    cv::namedWindow(window_name_ir, cv::WINDOW_AUTOSIZE);
-
-
+    
     while(!calibrated) {
 
         rs2::frameset data = pipe.wait_for_frames(); // Wait for next set of frames from the camera
@@ -66,7 +60,9 @@ void calibrate_color_ir(cv::Mat &H_rgb, cv::Mat &H_ir, rs2::pipeline &pipe) {
             int i=0;
             std::cout << "Calibrate (1/0)";
             std::cin >> i;
-            if(i) break;
+            if(i) {
+                break;
+            }
         }
 
         if (cv::waitKey(1) > 0) {
