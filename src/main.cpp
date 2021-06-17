@@ -31,10 +31,11 @@ int main(int argc, char * argv[]) {
 
     std::cout << "Pipeline started" << std::endl;
 
-    cv::Mat H;
-    calibrate_color_ir(H, pipe);
+    cv::Mat H_rgb, H_ir;
+    calibrate_color_ir(H_rgb, H_ir, pipe);
 
-    std::cout << H << std::endl;
+    std::cout << H_rgb << std::endl;
+    std::cout << H_ir << std::endl;
 
     pipe.stop();
 

@@ -1,13 +1,16 @@
 #include "calibrate_rs.hpp"
 
 
-void calibrate_color_ir(cv::Mat &H_rgb, rs2::pipeline &pipe) {
+void calibrate_color_ir(cv::Mat &H_rgb, cv::Mat &H_ir, rs2::pipeline &pipe) {
 
     //Exercise 1, find homography between color camera and chessboard plane
     bool calibrated = false;
 
-    const auto window_name = "Display Image";
-    cv::namedWindow(window_name, cv::WINDOW_AUTOSIZE);
+    const auto window_name_color = "Display Image Color Cam";
+    cv::namedWindow(window_name_color, cv::WINDOW_AUTOSIZE);
+    const auto window_name_ir = "Display Image IR Cam";
+    cv::namedWindow(window_name_ir, cv::WINDOW_AUTOSIZE);
+
 
     while(!calibrated) {
 
@@ -27,33 +30,37 @@ void calibrate_color_ir(cv::Mat &H_rgb, rs2::pipeline &pipe) {
         std::vector<cv::Point2f> points_color_cam;
         bool is_found_rgb = cv::findChessboardCorners(image, patternSize, points_color_cam);
 
-        if(is_found_rgb) {
+        //Get chess board corners (IR)
+        std::vector<cv::Point2f> points_ir_cam;
+        bool is_found_ir = cv::findChessboardCorners(ir_img, patternSize, points_ir_cam);
+
+        if(is_found_rgb && is_found_ir) {
             std::vector<cv::Point2f> real_world_points;
 
             float squareSize = 2.6; //cm
-            int k=0;
             for( int i = 0; i < 6; i++ ) {
                 for( int j = 0; j < 9; j++ ) {
                     real_world_points.push_back(cv::Point2f(float(j*squareSize),float(i*squareSize)));
-                    //std::cout << float(j*squareSize) << ", " << float(i*squareSize) << std::endl;
-                    //std::cout << points_color_cam[k] << std::endl;
-                    k++;
                 }
             }
 
             //Homography between color camera and chessboard plane
             H_rgb = cv::findHomography(real_world_points, points_color_cam);
 
-            //std::cout << H_rgb << std::endl;
+            H_ir = cv::findHomography(real_world_points, points_ir_cam);
 
             cv::drawChessboardCorners(image, patternSize, points_color_cam, is_found_rgb);
+            cv::drawChessboardCorners(ir_img, patternSize, points_ir_cam, is_found_ir);
 
             std::vector<cv::Point2f> points_transformed;
-            cv::perspectiveTransform(points_color_cam, points_transformed, H_rgb.inv());
+            cv::perspectiveTransform(points_ir_cam, points_transformed, H_ir.inv());
+
+            std::cout << points_transformed[4] << std::endl;
 
         }
 
-        cv::imshow(window_name, image);
+        cv::imshow(window_name_color, image);
+        cv::imshow(window_name_ir, ir_img);
 
         if(is_found_rgb) {
             int i=0;
