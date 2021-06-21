@@ -98,7 +98,7 @@ int main(int argc, char * argv[]) {
             }
         }
         
-        /*
+        
         // Setup SimpleBlobDetector parameters.
         cv::SimpleBlobDetector::Params params;
 
@@ -136,7 +136,7 @@ int main(int argc, char * argv[]) {
                                     cv::Point(keypoints[1].pt.x+x_0,keypoints[1].pt.y +y_0),
                                     255,2);
         }
-        */
+        
         cv::imshow(window_name_ir, ir_img);
         cv::waitKey(); 
     }

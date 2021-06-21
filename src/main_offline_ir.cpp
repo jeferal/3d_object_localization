@@ -10,10 +10,8 @@ using namespace Eigen;
 
 int main() {
     //Get homographies
-    //cv::Mat calibration_color = cv::imread("/Users/jeferal/OneDrive - UPV/universidad/MAI2/Visión artificial/lab/3D/project/object_3d_localization/imgs_3/img_color_figures0.jpg");
-    //cv::Mat calibration_ir = cv::imread("/Users/jeferal/OneDrive - UPV/universidad/MAI2/Visión artificial/lab/3D/project/object_3d_localization/imgs_3/img_ir_figures0.jpg");
-    cv::Mat calibration_color = cv::imread("/Users/jeferal/OneDrive - UPV/universidad/MAI2/Visión artificial/lab/3D/lab_5/imgs_3/right_no_obj.jpeg");
-    cv::Mat calibration_ir = cv::imread("/Users/jeferal/OneDrive - UPV/universidad/MAI2/Visión artificial/lab/3D/lab_5/imgs_3/left_no_obj.jpeg");
+    cv::Mat calibration_color = cv::imread("/Users/jeferal/OneDrive - UPV/universidad/MAI2/Visión artificial/lab/3D/project/object_3d_localization/imgs_3/img_color_figures0.jpg");
+    cv::Mat calibration_ir = cv::imread("/Users/jeferal/OneDrive - UPV/universidad/MAI2/Visión artificial/lab/3D/project/object_3d_localization/imgs_3/img_ir_figures0.jpg");
 
     Mat H_rgb;
     cvtColor(calibration_color, calibration_color, cv::COLOR_RGB2GRAY);
