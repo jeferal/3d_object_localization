@@ -42,7 +42,7 @@ int main(int argc, char * argv[]) {
 
     //Get homography matrixes between chessboard plane and cameras
     cv::Mat H_rgb, H_ir;
-    calibrate_color_ir(H_rgb, H_ir, pipe, window_name_color, window_name_ir);
+    //calibrate_color_ir(H_rgb, H_ir, pipe, window_name_color, window_name_ir);
 
     std::cout << H_rgb << std::endl;
     std::cout << H_ir << std::endl;
@@ -66,8 +66,39 @@ int main(int argc, char * argv[]) {
 
         cv::normalize(ir_img, ir_img, 0, 255, cv::NORM_MINMAX);
 
-        cv::threshold(ir_img, ir_img, 80, 255, cv::THRESH_BINARY);
+        double alpha = 2.0; /*< Simple contrast control */
+        int beta = 50;       /*< Simple brightness control */
+        for( int y = 0; y < ir_img.rows; y++ ) {
+            for( int x = 0; x < ir_img.cols; x++ ) {
+                for( int c = 0; c < ir_img.channels(); c++ ) {
+                    ir_img.at<cv::Vec3b>(y,x)[c] =
+                    cv::saturate_cast<uchar>( alpha*ir_img.at<cv::Vec3b>(y,x)[c] + beta );
+                }
+            }
+        }
+
+        int th=160;
+
+        cv::imshow(window_name_color, ir_img);
+
+        //Get contours
+        std::vector<std::vector<cv::Point> > contours;
+        std::vector<cv::Vec4i> hierarchy;
+        cv::findContours( ir_img, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE );
+        ir_img = cv::Mat::zeros( ir_img.size(), CV_8UC3 );
+        cv::RNG rng(12345);
+        for( size_t i = 0; i< contours.size(); i++ ) {
+            double area = cv::contourArea(contours[i]);
+            std::cout << area << std::endl;
+            if (area > 10000) {
+                std::cout << "contour encoutered" << std::endl;
+                //cv::minEnclosingCircle(contours[i], );
+                cv::Scalar color = cv::Scalar( rng.uniform(0, 256), rng.uniform(0,256), rng.uniform(0,256) );
+                drawContours( ir_img, contours, (int)i, color, 2, cv::LINE_8, hierarchy, 0 );
+            }
+        }
         
+        /*
         // Setup SimpleBlobDetector parameters.
         cv::SimpleBlobDetector::Params params;
 
@@ -105,8 +136,7 @@ int main(int argc, char * argv[]) {
                                     cv::Point(keypoints[1].pt.x+x_0,keypoints[1].pt.y +y_0),
                                     255,2);
         }
-
-        cv::imshow(window_name_color, image);
+        */
         cv::imshow(window_name_ir, ir_img);
         cv::waitKey(); 
     }
