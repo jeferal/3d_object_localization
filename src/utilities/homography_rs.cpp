@@ -22,7 +22,8 @@ void homography_rs(Mat &img_calibration, Mat &H) {
 
         //Homography between color camera and chessboard plane
         H = cv::findHomography(real_world_points, points_cam);
-        std::cout << "Homography finded" << std::endl;
+        std::cout << "Homography found" << std::endl;
+        std::cout << H << std::endl;
         cv::drawChessboardCorners(img_calibration, patternSize, points_cam, is_found);
 
         //Camera calibration
